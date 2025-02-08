@@ -2,7 +2,7 @@ use clap::Parser;
 use std::path::PathBuf;
 
 #[derive(Parser, Debug)]
-#[command(author, version, about, long_about = None)]
+#[command(author="Advait Pandharpurkar", version="0.0.1", about="A Fake GitHub Commit history generator", long_about = None)]
 pub struct Args {
     /// Directory path for git repository
     #[arg(short = 'd', long = "dir")]
@@ -20,11 +20,22 @@ pub struct Args {
     #[arg(short = 'b', long = "back")]
     days_back: Option<u32>,
 
-    /// Minimum number of commits to generate per day
+    /// Minimum number of range of commits to generate per day (default 5)
     #[arg(short = 'r', long = "range-start")]
     commit_range_start: Option<u32>,
 
-    /// Maximum number of commits to generate per day
+    /// Maximum number of range of commits to generate per day (default 10)
     #[arg(short = 'x', long = "range-end")]
     commit_range_end: Option<u32>,
+
+
+    /// fixed number of commits (default 5)
+    #[arg(short = 'q', long = "fixed-number")]
+    fixed_number: Option<u32>,
+}
+
+#[test]
+fn verify_cli() {
+    use clap::CommandFactory;
+    Args::command().debug_assert();
 }
