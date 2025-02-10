@@ -54,3 +54,45 @@ fn test_is_git_repository() {
     
     cleanup_git_repo(&test_repo);
 }
+#[cfg(test)]
+mod tests {
+    use crate::git::{create_commit_file, create_directory, setup_git_folder};
+
+    use super::*;
+    use std::fs;
+    use std::path::PathBuf;
+
+    fn setup_test_repo() -> PathBuf {
+        let test_dir = PathBuf::from("/tmp/test_repo");
+        if test_dir.exists() {
+            fs::remove_dir_all(&test_dir).unwrap();
+        }
+        create_directory(&test_dir);
+        test_dir
+    }
+
+    #[test]
+    fn test_create_directory() {
+        let test_dir = setup_test_repo();
+        assert!(test_dir.exists());
+        fs::remove_dir_all(&test_dir).unwrap();
+    }
+
+    #[test]
+    fn test_create_commit_file() {
+        let test_dir = setup_test_repo();
+        create_commit_file(&test_dir);
+        assert!(test_dir.join("commit_maker.txt").exists());
+        fs::remove_dir_all(&test_dir).unwrap();
+    }
+
+    #[test]
+    fn test_setup_git_folder() {
+        let test_dir = setup_test_repo();
+        let test_dir_str = test_dir.to_str().unwrap();
+        setup_git_folder(test_dir_str);
+        assert!(is_git_repository(test_dir_str));
+        assert!(test_dir.join("commit_maker.txt").exists());
+        fs::remove_dir_all(&test_dir).unwrap();
+    }
+}
