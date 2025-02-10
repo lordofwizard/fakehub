@@ -121,8 +121,32 @@ mod tests {
         assert!(test_dir.join("commit_maker.txt").exists());
         fs::remove_dir_all(&test_dir).unwrap();
     }
+}
 
+fn temp_global_names(){
+    use std::process::Command;
 
+fn main() {
+    // Set Git user.name
+    let output_name = Command::new("git")
+        .args(["config", "--global", "user.name", "lordofwizard"])
+        .output()
+        .expect("Failed to set Git user.name");
+    
+    if !output_name.status.success() {
+        eprintln!("Error setting user.name: {}", String::from_utf8_lossy(&output_name.stderr));
+    }
+
+    // Set Git user.email
+    let output_email = Command::new("git")
+        .args(["config", "--global", "user.email", "advaitpandharpurkar619@gmail.com"])
+        .output()
+        .expect("Failed to set Git user.email");
+    
+    if !output_email.status.success() {
+        eprintln!("Error setting user.email: {}", String::from_utf8_lossy(&output_email.stderr));
+    }
+}
 
 }
 
@@ -141,9 +165,7 @@ mod tests_for_commit {
         let repo_str = repo_path.as_str();
         setup_git_folder(repo_str);
 
-        Command::new("git").arg("config").arg("--global").arg("user.name").arg("lordofwizard");
-        Command::new("git").arg("config").arg("--global").arg("user.email").arg("advaitpandharpurkar619@gmail.com");
-
+        temp_global_names();
         
         add_commits_in_date_range(repo_str, "01-02-2024", "05-02-2024");
         
