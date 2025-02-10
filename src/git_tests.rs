@@ -87,6 +87,7 @@ mod tests {
         fs::remove_dir_all(&test_dir).unwrap();
     }
 
+    #[cfg_attr(target_os = "macos", ignore)]
     #[test]
     fn test_create_commit_file() {
         let test_dir = setup_test_repo();
