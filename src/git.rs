@@ -1,6 +1,9 @@
+use chrono::{Duration, NaiveDate};
 use git2::{Config, Repository, IndexAddOption, Signature};
 use std::fs;
+use std::io::Write;
 use std::path::Path;
+use std::process::Command;
 
 pub fn get_global_git_username() -> Option<String> {
     let config = Config::open_default().ok()?;
@@ -56,5 +59,41 @@ pub fn setup_git_folder(folder_name: &str) {
         let repo = Repository::init(folder_name).expect("Failed to initialize git repository");
         create_commit_file(path);
         add_and_commit(&repo, path);
+    }
+}
+
+/// Adds a blank line to commit_maker.txt and commits it with a date-based signature.
+pub fn add_commits_in_date_range(repo_path: &str, start_date: &str, end_date: &str) {
+    let start = NaiveDate::parse_from_str(start_date, "%d-%m-%Y").expect("Invalid start date format");
+    let end = NaiveDate::parse_from_str(end_date, "%d-%m-%Y").expect("Invalid end date format");
+    let mut current_date = start;
+    
+    let username = get_global_git_username().expect("Failed to get Git username");
+    let email = get_global_git_email().expect("Failed to get Git email");
+    
+    while current_date <= end {
+        let file_path = format!("{}/commit_maker.txt", repo_path);
+        fs::OpenOptions::new()
+            .create(true)
+            .append(true)
+            .open(&file_path)
+            .expect("Failed to open commit_maker.txt")
+            .write_all(b"\n")
+            .expect("Failed to write to commit_maker.txt");
+        
+        let formatted_date = current_date.format("%Y-%m-%d").to_string();
+        Command::new("git")
+            .args(["add", "commit_maker.txt"])
+            .current_dir(repo_path)
+            .output()
+            .expect("Failed to add file to Git");
+        
+        Command::new("git")
+            .args(["commit", "-m", "Automated commit", "--author", &format!("{} <{}>", username, email), "--date", &formatted_date])
+            .current_dir(repo_path)
+            .output()
+            .expect("Failed to commit changes");
+        
+        current_date += Duration::days(1);
     }
 }
