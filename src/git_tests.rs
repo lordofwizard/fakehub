@@ -20,6 +20,22 @@ fn setup_git_repo() -> String {
     test_repo_path.to_str().unwrap().to_string()
 }
 
+fn setup_git_repo_commit_check() -> String {
+    let mut test_repo_path = env::temp_dir();
+    test_repo_path.push("test_git_repo_2");
+    
+    let _ = fs::remove_dir_all(&test_repo_path); // Ensure a clean setup
+    fs::create_dir_all(&test_repo_path).unwrap();
+
+    Command::new("git")
+        .arg("init")
+        .current_dir(&test_repo_path)
+        .output()
+        .expect("Failed to initialize Git repository");
+
+    test_repo_path.to_str().unwrap().to_string()
+}
+
 /// Cleans up the test repository.
 fn cleanup_git_repo(path: &str) {
     let _ = fs::remove_dir_all(path);
@@ -121,7 +137,7 @@ mod tests_for_commit {
 
     #[test]
     fn test_correct_number_of_commits() {
-        let repo_path = setup_git_repo();
+        let repo_path = setup_git_repo_commit_check();
         let repo_str = repo_path.as_str();
         setup_git_folder(repo_str);
 
