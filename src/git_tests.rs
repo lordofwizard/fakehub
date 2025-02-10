@@ -1,20 +1,23 @@
 use std::fs;
 use std::process::Command;
+use std::env;
 use crate::git::{get_global_git_username, get_global_git_email, is_git_repository};
 
 /// Sets up a temporary Git repository for testing.
 fn setup_git_repo() -> String {
-    let test_repo_path = "/tmp/test_git_repo";
-    let _ = fs::remove_dir_all(test_repo_path); // Ensure a clean setup
-    fs::create_dir_all(test_repo_path).unwrap();
+    let mut test_repo_path = env::temp_dir();
+    test_repo_path.push("test_git_repo");
+    
+    let _ = fs::remove_dir_all(&test_repo_path); // Ensure a clean setup
+    fs::create_dir_all(&test_repo_path).unwrap();
 
     Command::new("git")
         .arg("init")
-        .current_dir(test_repo_path)
+        .current_dir(&test_repo_path)
         .output()
         .expect("Failed to initialize Git repository");
 
-    test_repo_path.to_string()
+    test_repo_path.to_str().unwrap().to_string()
 }
 
 /// Cleans up the test repository.
@@ -49,11 +52,14 @@ fn test_is_git_repository() {
     
     assert!(is_git_repository(&test_repo), "Expected {} to be a Git repository", test_repo);
     
-    let non_repo_path = "/tmp/non_existent_directory";
-    assert!(!is_git_repository(non_repo_path), "Expected {} to NOT be a Git repository", non_repo_path);
+    let mut non_repo_path = env::temp_dir();
+    non_repo_path.push("non_existent_directory");
+    let non_repo_path_str = non_repo_path.to_str().unwrap();
+    assert!(!is_git_repository(non_repo_path_str), "Expected {} to NOT be a Git repository", non_repo_path_str);
     
     cleanup_git_repo(&test_repo);
 }
+
 #[cfg(test)]
 mod tests {
     use crate::git::{create_commit_file, create_directory, setup_git_folder};
@@ -61,9 +67,12 @@ mod tests {
     use super::*;
     use std::fs;
     use std::path::PathBuf;
+    use std::env;
 
     fn setup_test_repo() -> PathBuf {
-        let test_dir = PathBuf::from("/tmp/test_repo");
+        let mut test_dir = env::temp_dir();
+        test_dir.push("test_repo");
+        
         if test_dir.exists() {
             fs::remove_dir_all(&test_dir).unwrap();
         }
