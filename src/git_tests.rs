@@ -161,11 +161,10 @@ mod tests_for_commit {
 
     #[test]
     fn test_correct_number_of_commits() {
+        temp_global_names();
         let repo_path = setup_git_repo_commit_check();
         let repo_str = repo_path.as_str();
         setup_git_folder(repo_str);
-
-        temp_global_names();
         
         add_commits_in_date_range(repo_str, "01-02-2024", "05-02-2024");
         
