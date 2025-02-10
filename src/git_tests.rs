@@ -124,6 +124,10 @@ mod tests_for_commit {
         let repo_path = setup_git_repo();
         let repo_str = repo_path.as_str();
         setup_git_folder(repo_str);
+
+        Command::new("git").arg("config").arg("--global").arg("user.name").arg("lordofwizard");
+        Command::new("git").arg("config").arg("--global").arg("user.email").arg("advaitpandharpurkar619@gmail.com");
+
         
         add_commits_in_date_range(repo_str, "01-02-2024", "05-02-2024");
         
