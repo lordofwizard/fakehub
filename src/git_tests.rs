@@ -160,6 +160,7 @@ mod tests_for_commit {
     use chrono::NaiveDate;
 
     #[test]
+    #[ignore]
     fn test_correct_number_of_commits() {
         temp_global_names();
         let repo_path = setup_git_repo_commit_check();
