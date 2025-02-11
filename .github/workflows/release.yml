@@ -41,15 +41,15 @@ jobs:
           fi
         shell: bash
 
-      - name: Compress binary
+      - name: Compress binary (Windows)
+        if: runner.os == 'Windows'
+        run: Compress-Archive -Path fakehub-windows.exe -DestinationPath fakehub-windows.zip
+        shell: pwsh
+
+      - name: Compress binary (Linux/macOS)
+        if: runner.os != 'Windows'
         run: |
-          if [[ "$RUNNER_OS" == "Windows" ]]; then
-            zip fakehub-windows.zip fakehub-windows.exe
-          elif [[ "$RUNNER_OS" == "macOS" ]]; then
-            tar -czvf fakehub-macos.tar.gz fakehub-macos
-          else
-            tar -czvf fakehub-linux.tar.gz fakehub-linux
-          fi
+          tar -czvf fakehub-${{ runner.os }}.tar.gz fakehub-${{ runner.os }}
         shell: bash
 
       - name: Upload release artifacts
