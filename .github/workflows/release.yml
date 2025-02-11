@@ -1,0 +1,61 @@
+name: Release FakeHub MultiOS
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  release:
+    name: Build & Release (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Cargo dependencies
+        uses: Swatinem/rust-cache@v2
+
+      - name: Build project
+        run: cargo build --release --verbose
+
+      - name: Determine version
+        id: version
+        run: echo "VERSION=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
+
+      - name: Rename binary for platform
+        run: |
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            mv target/release/fakehub.exe fakehub-windows.exe
+          elif [[ "$RUNNER_OS" == "macOS" ]]; then
+            mv target/release/fakehub fakehub-macos
+          else
+            mv target/release/fakehub fakehub-linux
+          fi
+        shell: bash
+
+      - name: Compress binaries
+        run: |
+          tar -czvf fakehub-linux.tar.gz fakehub-linux
+          tar -czvf fakehub-macos.tar.gz fakehub-macos
+          zip fakehub-windows.zip fakehub-windows.exe
+        shell: bash
+
+      - name: Upload release artifacts
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ env.VERSION }}
+          name: Release v${{ env.VERSION }}
+          draft: false
+          prerelease: false
+          files: |
+            fakehub-*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
