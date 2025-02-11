@@ -1,12 +1,10 @@
 mod args;
 mod git;
-mod time;
 mod git_tests;
-
-use crate::args::Args;
-use clap::Parser;
-
+mod run;
+mod time;
 
 fn main() {
-    let _arg = Args::parse();
+    use run::run;
+    run();
 }
