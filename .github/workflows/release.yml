@@ -41,11 +41,15 @@ jobs:
           fi
         shell: bash
 
-      - name: Compress binaries
+      - name: Compress binary
         run: |
-          tar -czvf fakehub-linux.tar.gz fakehub-linux
-          tar -czvf fakehub-macos.tar.gz fakehub-macos
-          zip fakehub-windows.zip fakehub-windows.exe
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            zip fakehub-windows.zip fakehub-windows.exe
+          elif [[ "$RUNNER_OS" == "macOS" ]]; then
+            tar -czvf fakehub-macos.tar.gz fakehub-macos
+          else
+            tar -czvf fakehub-linux.tar.gz fakehub-linux
+          fi
         shell: bash
 
       - name: Upload release artifacts
