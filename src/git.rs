@@ -1,5 +1,6 @@
 use chrono::{Duration, NaiveDate};
 use git2::{Config, IndexAddOption, Repository, Signature};
+use rand::Rng;
 use std::fs;
 use std::io::Write;
 use std::path::Path;
@@ -67,7 +68,14 @@ pub fn setup_git_folder(folder_name: &str) {
 }
 
 /// Adds a blank line to commit_maker.txt and commits it with a date-based signature.
-pub fn add_commits_in_date_range(repo_path: &str, start_date: &str, end_date: &str) {
+pub fn add_commits_in_date_range(
+    repo_path: &str,
+    start_date: &str,
+    end_date: &str,
+    commit_range_start: u32,
+    commit_range_end: u32,
+    fixed_number: u32,
+) {
     let start =
         NaiveDate::parse_from_str(start_date, "%d-%m-%Y").expect("Invalid start date format");
     let end = NaiveDate::parse_from_str(end_date, "%d-%m-%Y").expect("Invalid end date format");
@@ -77,35 +85,71 @@ pub fn add_commits_in_date_range(repo_path: &str, start_date: &str, end_date: &s
     let email = get_global_git_email().expect("Failed to get Git email");
 
     while current_date <= end {
-        let file_path = format!("{}/commit_maker.txt", repo_path);
-        fs::OpenOptions::new()
-            .create(true)
-            .append(true)
-            .open(&file_path)
-            .expect("Failed to open commit_maker.txt")
-            .write_all(b"\n")
-            .expect("Failed to write to commit_maker.txt");
+        if fixed_number != 0 {
+            for _ in 0..fixed_number {
+                let file_path = format!("{}/commit_maker.txt", repo_path);
+                fs::OpenOptions::new()
+                    .create(true)
+                    .append(true)
+                    .open(&file_path)
+                    .expect("Failed to open commit_maker.txt")
+                    .write_all(b"\n")
+                    .expect("Failed to write to commit_maker.txt");
 
-        let formatted_date = current_date.format("%Y-%m-%d").to_string();
-        Command::new("git")
-            .args(["add", "commit_maker.txt"])
-            .current_dir(repo_path)
-            .output()
-            .expect("Failed to add file to Git");
+                let formatted_date = current_date.format("%Y-%m-%d").to_string();
+                Command::new("git")
+                    .args(["add", "commit_maker.txt"])
+                    .current_dir(repo_path)
+                    .output()
+                    .expect("Failed to add file to Git");
 
-        Command::new("git")
-            .args([
-                "commit",
-                "-m",
-                "Automated commit",
-                "--author",
-                &format!("{} <{}>", username, email),
-                "--date",
-                &formatted_date,
-            ])
-            .current_dir(repo_path)
-            .output()
-            .expect("Failed to commit changes");
+                Command::new("git")
+                    .args([
+                        "commit",
+                        "-m",
+                        "Automated commit",
+                        "--author",
+                        &format!("{} <{}>", username, email),
+                        "--date",
+                        &formatted_date,
+                    ])
+                    .current_dir(repo_path)
+                    .output()
+                    .expect("Failed to commit changes");
+            }
+        } else {
+            for _ in 0..rand::rng().random_range(commit_range_start..=commit_range_end) {
+                let file_path = format!("{}/commit_maker.txt", repo_path);
+                fs::OpenOptions::new()
+                    .create(true)
+                    .append(true)
+                    .open(&file_path)
+                    .expect("Failed to open commit_maker.txt")
+                    .write_all(b"\n")
+                    .expect("Failed to write to commit_maker.txt");
+
+                let formatted_date = current_date.format("%Y-%m-%d").to_string();
+                Command::new("git")
+                    .args(["add", "commit_maker.txt"])
+                    .current_dir(repo_path)
+                    .output()
+                    .expect("Failed to add file to Git");
+
+                Command::new("git")
+                    .args([
+                        "commit",
+                        "-m",
+                        "Automated commit",
+                        "--author",
+                        &format!("{} <{}>", username, email),
+                        "--date",
+                        &formatted_date,
+                    ])
+                    .current_dir(repo_path)
+                    .output()
+                    .expect("Failed to commit changes");
+            }
+        }
 
         current_date += Duration::days(1);
     }

@@ -185,7 +185,7 @@ mod tests_for_commit {
         let repo_str = repo_path.as_str();
         setup_git_folder(repo_str);
 
-        add_commits_in_date_range(repo_str, "01-02-2024", "05-02-2024");
+        add_commits_in_date_range(repo_str, "01-02-2024", "05-02-2024", 0,0,1);
 
         let output = Command::new("git")
             .args(["rev-list", "--count", "HEAD"])
@@ -217,7 +217,7 @@ mod tests_for_commit {
             .output()
             .unwrap();
 
-        add_commits_in_date_range(repo_str, "32-01-2021", "05-02-2021");
+        add_commits_in_date_range(repo_str, "32-01-2021", "05-02-2021",0,0,1);
     }
 
     #[test]
@@ -232,6 +232,6 @@ mod tests_for_commit {
             .output()
             .unwrap();
 
-        add_commits_in_date_range(repo_str, "29-02-2021", "05-02-2021");
+        add_commits_in_date_range(repo_str, "29-02-2021", "05-02-2021",0,0,1);
     }
 }

@@ -1,4 +1,7 @@
-use crate::{args::Args, git::{add_commits_in_date_range, setup_git_folder}};
+use crate::{
+    args::Args,
+    git::{add_commits_in_date_range, setup_git_folder},
+};
 use clap::Parser;
 
 pub fn run() {
@@ -15,6 +18,5 @@ pub fn run() {
 
     setup_git_folder(repository);
 
-    add_commits_in_date_range(repository, start_date, end_date);
-
+    add_commits_in_date_range(repository, start_date, end_date,commit_range_start,commit_range_end,fixed_number);
 }

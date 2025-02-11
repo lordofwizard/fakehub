@@ -54,14 +54,16 @@ impl Args {
             let start = today - Duration::days(days as i64);
             (
                 start.format("%d-%m-%Y").to_string(),
-                end.format("%d-%m-%Y").to_string()
+                end.format("%d-%m-%Y").to_string(),
             )
         } else {
             // Use start_date and end_date logic only if days_back is None
             let default_start_date = today - Duration::days(365);
             (
-                self.start_date.unwrap_or_else(|| default_start_date.format("%d-%m-%Y").to_string()),
-                self.end_date.unwrap_or_else(|| today.format("%d-%m-%Y").to_string())
+                self.start_date
+                    .unwrap_or_else(|| default_start_date.format("%d-%m-%Y").to_string()),
+                self.end_date
+                    .unwrap_or_else(|| today.format("%d-%m-%Y").to_string()),
             )
         };
 
@@ -69,17 +71,18 @@ impl Args {
         let days_back = self.days_back.unwrap_or(365);
 
         // Handle commit counts based on fixed_number presence
-        let (commit_range_start, commit_range_end, fixed_number) = if let Some(fixed) = self.fixed_number {
-            // If fixed_number is provided, ignore range values
-            (0, 0, fixed)
-        } else {
-            // Use range values only if fixed_number is None
-            (
-                self.commit_range_start.unwrap_or(5),
-                self.commit_range_end.unwrap_or(10),
-                0
-            )
-        };
+        let (commit_range_start, commit_range_end, fixed_number) =
+            if let Some(fixed) = self.fixed_number {
+                // If fixed_number is provided, ignore range values
+                (0, 0, fixed)
+            } else {
+                // Use range values only if fixed_number is None
+                (
+                    self.commit_range_start.unwrap_or(5),
+                    self.commit_range_end.unwrap_or(10),
+                    0,
+                )
+            };
 
         (
             directory,
@@ -88,7 +91,7 @@ impl Args {
             days_back,
             commit_range_start,
             commit_range_end,
-            fixed_number
+            fixed_number,
         )
     }
 }
