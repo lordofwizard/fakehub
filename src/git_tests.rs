@@ -1,9 +1,11 @@
-use crate::git::{get_global_git_email, get_global_git_username, is_git_repository};
 use std::env;
 use std::fs;
 use std::process::Command;
+#[allow(unused_imports)]
+use crate::git::{get_global_git_email,get_global_git_username,is_git_repository};
 
 /// Sets up a temporary Git repository for testing.
+#[allow(dead_code)]
 fn setup_git_repo() -> String {
     let mut test_repo_path = env::temp_dir();
     test_repo_path.push("test_git_repo");
@@ -20,6 +22,7 @@ fn setup_git_repo() -> String {
     test_repo_path.to_str().unwrap().to_string()
 }
 
+#[allow(dead_code)]
 fn setup_git_repo_commit_check() -> String {
     let mut test_repo_path = env::temp_dir();
     test_repo_path.push("test_git_repo_2");
@@ -37,6 +40,7 @@ fn setup_git_repo_commit_check() -> String {
 }
 
 /// Cleans up the test repository.
+#[allow(dead_code)]
 fn cleanup_git_repo(path: &str) {
     let _ = fs::remove_dir_all(path);
 }
@@ -131,6 +135,7 @@ mod tests {
     }
 }
 
+#[allow(dead_code)]
 fn temp_global_names() {
     use std::process::Command;
 
@@ -173,7 +178,6 @@ mod tests_for_commit {
     use crate::git::{add_commits_in_date_range, setup_git_folder};
 
     use super::*;
-    use chrono::NaiveDate;
     use std::fs;
     use std::process::Command;
 
@@ -185,7 +189,7 @@ mod tests_for_commit {
         let repo_str = repo_path.as_str();
         setup_git_folder(repo_str);
 
-        add_commits_in_date_range(repo_str, "01-02-2024", "05-02-2024", 0,0,1);
+        add_commits_in_date_range(repo_str, "01-02-2024", "05-02-2024", 0, 0, 1);
 
         let output = Command::new("git")
             .args(["rev-list", "--count", "HEAD"])
@@ -217,7 +221,7 @@ mod tests_for_commit {
             .output()
             .unwrap();
 
-        add_commits_in_date_range(repo_str, "32-01-2021", "05-02-2021",0,0,1);
+        add_commits_in_date_range(repo_str, "32-01-2021", "05-02-2021", 0, 0, 1);
     }
 
     #[test]
@@ -232,6 +236,6 @@ mod tests_for_commit {
             .output()
             .unwrap();
 
-        add_commits_in_date_range(repo_str, "29-02-2021", "05-02-2021",0,0,1);
+        add_commits_in_date_range(repo_str, "29-02-2021", "05-02-2021", 0, 0, 1);
     }
 }

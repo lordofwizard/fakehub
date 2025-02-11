@@ -97,6 +97,7 @@ impl Args {
 }
 
 // Helper function to parse date string (DD-MM-YYYY)
+#[allow(dead_code)]
 fn parse_date(date_str: &str) -> Option<NaiveDate> {
     NaiveDate::parse_from_str(date_str, "%d-%m-%Y").ok()
 }

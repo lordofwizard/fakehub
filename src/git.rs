@@ -1,5 +1,5 @@
 use chrono::{Duration, NaiveDate};
-use git2::{Config, IndexAddOption, Repository, Signature};
+use git2::{Config, Repository, Signature};
 use rand::Rng;
 use std::fs;
 use std::io::Write;
@@ -31,7 +31,7 @@ pub fn create_commit_file(path: &Path) {
     fs::write(&file_path, "Initial commit").expect("Failed to write file");
 }
 
-pub fn add_and_commit(repo: &Repository, path: &Path) {
+pub fn add_and_commit(repo: &Repository, _path: &Path) {
     let mut index = repo.index().expect("Failed to get index");
     index
         .add_path(Path::new("commit_maker.txt"))
