@@ -80,11 +80,23 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y musl-tools libssl-dev
-          
 
 
+      # Install OpenSSL on macOS
+      - name: Install OpenSSL (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install openssl@3
+          echo "OPENSSL_DIR=$(brew --prefix openssl@3)" >> $GITHUB_ENV
+          echo "OPENSSL_ROOT_DIR=$(brew --prefix openssl@3)" >> $GITHUB_ENV
 
-
+      # Install OpenSSL on Windows
+      - name: Install OpenSSL (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          choco install openssl
+          echo "OPENSSL_DIR=C:\Program Files\OpenSSL-Win64" >> $env:GITHUB_ENV
+          echo "OPENSSL_ROOT_DIR=C:\Program Files\OpenSSL-Win64" >> $env:GITHUB_ENV
 
       - name: Rust cache
         uses: swatinem/rust-cache@v2
