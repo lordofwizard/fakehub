@@ -1,10 +1,10 @@
 # FakeHub
-
-![Latest Release](https://img.shields.io/github/v/release/lordofwizard/fakehub?style=for-the-badge)
-![Build](https://img.shields.io/github/actions/workflow/status/lordofwizard/fakehub/build_test.yml?branch=main&style=for-the-badge)
-![License](https://img.shields.io/github/license/lordofwizard/fakehub?style=for-the-badge)
-![GitHub issues](https://img.shields.io/github/issues/lordofwizard/fakehub?style=for-the-badge)
-![GitHub stars](https://img.shields.io/github/stars/lordofwizard/fakehub?style=for-the-badge)
+![image](https://github.com/user-attachments/assets/843a70ee-3110-4d78-8b41-e4d74b67d176)
+![Latest Release](https://img.shields.io/github/v/release/lordofwizard/fakehub?style=flat)
+![Build](https://img.shields.io/github/actions/workflow/status/lordofwizard/fakehub/build_test.yml?branch=main&style=flat)
+![License](https://img.shields.io/github/license/lordofwizard/fakehub?style=flat)
+![GitHub issues](https://img.shields.io/github/issues/lordofwizard/fakehub?style=flat)
+![GitHub stars](https://img.shields.io/github/stars/lordofwizard/fakehub?style=flat)
 
 ---
 
