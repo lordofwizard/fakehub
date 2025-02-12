@@ -1,5 +1,5 @@
 # FakeHub
-![image](https://github.com/user-attachments/assets/843a70ee-3110-4d78-8b41-e4d74b67d176)
+![Preview](https://github.com/user-attachments/assets/843a70ee-3110-4d78-8b41-e4d74b67d176)
 ![Latest Release](https://img.shields.io/github/v/release/lordofwizard/fakehub?style=flat)
 ![Build](https://img.shields.io/github/actions/workflow/status/lordofwizard/fakehub/build_test.yml?branch=main&style=flat)
 ![License](https://img.shields.io/github/license/lordofwizard/fakehub?style=flat)
