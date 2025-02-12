@@ -6,7 +6,7 @@ edition = "2021"
 [dependencies]
 chrono = "0.4.39"
 clap = { version = "4.5.28", features = ["derive"] }
-git2 = "0.20.0"
+git2 = { version = "0.20.0", features = ["vendored-libgit2"] }
 rand = "0.9.0"
 
 # Required for cross-compilation in our CI release pipeline
