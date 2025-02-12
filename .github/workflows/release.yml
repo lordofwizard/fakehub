@@ -99,7 +99,7 @@ jobs:
           echo "OPENSSL_NO_VENDOR=1" >> $GITHUB_ENV
           
           # Install cross-compiled OpenSSL for Windows
-          wget https://lib.rs/files/openssl-win.tar.gz
+          wget https://github.com/openssl/openssl/releases/download/openssl-3.4.1/openssl-3.4.1.tar.gz -O openssl-win.tar.gz 
           sudo mkdir -p /usr/local/openssl-win64
           sudo tar xf openssl-win.tar.gz -C /usr/local/openssl-win64 --strip-components=1
           echo "OPENSSL_DIR=/usr/local/openssl-win64" >> $GITHUB_ENV
