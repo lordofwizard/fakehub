@@ -52,18 +52,51 @@ FakeHub provides multiple options to customize commit generation.
 fakehub [OPTIONS]
 ```
 
-### **Options**
-```
-  -d, --dir <DIRECTORY>          Directory path for git repository
-  -s, --start <START_DATE>       Start date for commit generation (format: DD-MM-YYYY)
-  -e, --end <END_DATE>           End date for commit generation (format: DD-MM-YYYY)
-  -b, --back <DAYS_BACK>         Generate commits for specified number of days back from current date
-  -r, --range-start <COMMIT_RANGE_START>  Minimum number of range of commits to generate per day (default 5)
-  -x, --range-end <COMMIT_RANGE_END>      Maximum number of range of commits to generate per day (default 10)
-  -q, --fixed-number <FIXED_NUMBER>       Fixed number of commits (default 5)
-  -h, --help                      Print help
-  -V, --version                   Print version
-```
+### **Options Explained**
+
+- `-d, --dir <DIRECTORY>`  
+  Specifies the directory where the fake Git repository will be created.
+  
+- `-s, --start <START_DATE>`  
+  Defines the start date for commit generation. Must be in the format `DD-MM-YYYY`.
+  
+- `-e, --end <END_DATE>`  
+  Specifies the end date for commit generation, also in `DD-MM-YYYY` format.
+  
+- `-b, --back <DAYS_BACK>`  
+  Instead of setting explicit start and end dates, this option generates commits for a specified number of days back from the current date.
+  
+- `-r, --range-start <COMMIT_RANGE_START>`  
+  Sets the minimum number of commits to generate per day (default: `5`).
+  
+- `-x, --range-end <COMMIT_RANGE_END>`  
+  Sets the maximum number of commits per day (default: `10`).
+  
+- `-q, --fixed-number <FIXED_NUMBER>`  
+  Generates a fixed number of commits per day, overriding `--range-start` and `--range-end` (default: `5`).
+  
+- `-h, --help`  
+  Displays help information.
+  
+- `-V, --version`  
+  Prints the current version of FakeHub.
+  
+### **Example Usages**
+
+1. **Generate commits from a fixed date range:**
+   ```sh
+   fakehub --start 01-01-2023 --end 31-12-2023
+   ```
+
+2. **Generate commits for the last 90 days with a variable range of 3-8 commits per day:**
+   ```sh
+   fakehub --back 90 --range-start 3 --range-end 8
+   ```
+
+3. **Generate exactly 10 commits per day for the past 30 days:**
+   ```sh
+   fakehub --back 30 --fixed-number 10
+   ```
 
 ---
 
@@ -74,7 +107,7 @@ This project is released under the **MIT License**. See the [LICENSE](LICENSE) f
 
 ## ⭐ Contribute & Support
 - If you like this project, **star the repo!** ⭐
-- Open an issue if you find bugs or have suggestions.
+- Open an [issue](https://github.com/lordofwizard/fakehub/issues) if you find bugs or have suggestions.
 
 Enjoy your fake Git history! 😉
 
