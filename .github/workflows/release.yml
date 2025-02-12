@@ -1,129 +1,41 @@
 name: Release
 
+permissions:
+  contents: write
+
 on:
   push:
-    branches:
-      - main
-
-env:
-  CARGO_TERM_COLOR: always
+    tags:
+      - v[0-9]+.*
 
 jobs:
   create-release:
-    name: Create Release
     runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.get_version.outputs.version }}
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
-      - name: Generate version from timestamp
-        id: get_version
-        run: |
-          TIMESTAMP=$(date '+%Y%m%d%H%M%S')
-          echo "version=$TIMESTAMP" >> $GITHUB_OUTPUT
-
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v4
+      - uses: taiki-e/create-gh-release-action@v1
         with:
-          tag_name: v${{ steps.get_version.outputs.version }}
-          release_name: Release v${{ steps.get_version.outputs.version }}
-          draft: false
-          prerelease: false
+          # (optional) Path to changelog.
+          changelog: CHANGELOG.md
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-  build-and-upload:
+  upload-assets:
     needs: create-release
-    name: Build and Upload
-    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         include:
-          - os: ubuntu-latest
-            artifact_name: fakehub
-            asset_name: fakehub-linux-x86_64
-            target: x86_64-unknown-linux-gnu
-          - os: ubuntu-latest
-            artifact_name: fakehub
-            asset_name: fakehub-linux-musl-x86_64
-            target: x86_64-unknown-linux-musl
-          - os: ubuntu-latest
-            artifact_name: fakehub.exe
-            asset_name: fakehub-windows-x86_64.exe
-            target: x86_64-pc-windows-msvc
-          - os: macos-latest
-            artifact_name: fakehub
-            asset_name: fakehub-macos-x86_64
-            target: x86_64-apple-darwin
-
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-latest
+          - target: x86_64-apple-darwin
+            os: macos-latest
+          - target: x86_64-pc-windows-msvc
+            os: windows-latest
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+      - uses: taiki-e/upload-rust-binary-action@v1
         with:
-          fetch-depth: 0
-
-      - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: ${{ matrix.target }}
-
-      # Install OpenSSL on Ubuntu (GNU)
-      - name: Install OpenSSL (Ubuntu GNU)
-        if: matrix.target == 'x86_64-unknown-linux-gnu'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y pkg-config libssl-dev
-
-      # Special handling for MUSL build
-      - name: Setup MUSL
-        if: matrix.target == 'x86_64-unknown-linux-musl'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y musl-tools libssl-dev
-
-      # Install OpenSSL on macOS
-      - name: Install OpenSSL (macOS)
-        if: runner.os == 'macOS'
-        run: |
-          brew install openssl@3
-          echo "OPENSSL_DIR=$(brew --prefix openssl@3)" >> $GITHUB_ENV
-          echo "OPENSSL_ROOT_DIR=$(brew --prefix openssl@3)" >> $GITHUB_ENV
-
-      # Setup for Windows cross-compilation
-      - name: Setup Windows Cross-compilation
-        if: matrix.target == 'x86_64-pc-windows-msvc'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y mingw-w64 gcc-mingw-w64
-          echo "OPENSSL_STATIC=1" >> $GITHUB_ENV
-          echo "OPENSSL_NO_VENDOR=1" >> $GITHUB_ENV
-          
-          # Install cross-compiled OpenSSL for Windows
-          wget https://github.com/openssl/openssl/releases/download/openssl-3.4.1/openssl-3.4.1.tar.gz -O openssl-win.tar.gz 
-          sudo mkdir -p /usr/local/openssl-win64
-          sudo tar xf openssl-win.tar.gz -C /usr/local/openssl-win64 --strip-components=1
-          echo "OPENSSL_DIR=/usr/local/openssl-win64" >> $GITHUB_ENV
-          echo "OPENSSL_LIB_DIR=/usr/local/openssl-win64/lib" >> $GITHUB_ENV
-          echo "OPENSSL_INCLUDE_DIR=/usr/local/openssl-win64/include" >> $GITHUB_ENV
-
-      - name: Rust cache
-        uses: swatinem/rust-cache@v2
-        with:
-          key: ${{ matrix.target }}
-
-      - name: Build
-        run: cargo build --release --target ${{ matrix.target }}
-
-      - name: Run tests
-        if: matrix.target != 'x86_64-pc-windows-msvc'
-        run: cargo test --release --target ${{ matrix.target }}
-
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: ./target/${{ matrix.target }}/release/${{ matrix.artifact_name }}
-          asset_name: ${{ matrix.asset_name }}
-          asset_content_type: application/octet-stream
+          target: ${{ matrix.target }}
+          tar: unix
+          zip: windows
+          token: ${{ secrets.GITHUB_TOKEN }}
