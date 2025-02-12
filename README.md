@@ -11,7 +11,7 @@
 ## 🚀 Introduction
 FakeHub is a **fake Git/GitHub history generator** powered by [**libgit2**](https://libgit2.org/) and written entirely in **Rust**🦀. It creates a repository (`fakehub_repo` by default) and fills it with a **completely artificial commit history**.
 
-⚠ **This project is made as a joke!** Use it at your own risk. We take no responsibility for whatever nonsense you do with it. 😆
+⚠ **This project is made as a joke!** Use it at your own risk. 😆
 
 ---
 
