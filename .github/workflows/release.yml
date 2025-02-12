@@ -43,12 +43,19 @@ jobs:
           - os: ubuntu-latest
             artifact_name: fakehub
             asset_name: fakehub-linux-x86_64
+            target: x86_64-unknown-linux-gnu
+          - os: ubuntu-latest
+            artifact_name: fakehub
+            asset_name: fakehub-linux-musl-x86_64
+            target: x86_64-unknown-linux-musl
           - os: windows-latest
             artifact_name: fakehub.exe
             asset_name: fakehub-windows-x86_64.exe
+            target: x86_64-pc-windows-msvc
           - os: macos-latest
             artifact_name: fakehub
             asset_name: fakehub-macos-x86_64
+            target: x86_64-apple-darwin
 
     steps:
       - uses: actions/checkout@v4
@@ -57,17 +64,25 @@ jobs:
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Install musl-tools
+        if: matrix.target == 'x86_64-unknown-linux-musl'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y musl-tools
 
       - name: Rust cache
         uses: swatinem/rust-cache@v2
         with:
-          key: ${{ matrix.os }}
+          key: ${{ matrix.target }}
 
       - name: Build
-        run: cargo build --release
+        run: cargo build --release --target ${{ matrix.target }}
 
       - name: Run tests
-        run: cargo test --release
+        run: cargo test --release --target ${{ matrix.target }}
 
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
@@ -75,6 +90,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: ./target/release/${{ matrix.artifact_name }}
+          asset_path: ./target/${{ matrix.target }}/release/${{ matrix.artifact_name }}
           asset_name: ${{ matrix.asset_name }}
           asset_content_type: application/octet-stream
