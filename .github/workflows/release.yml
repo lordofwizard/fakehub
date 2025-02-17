@@ -19,11 +19,19 @@ jobs:
     strategy:
       matrix:
         include:
+          - target: aarch64-apple-darwin
+            os: macos-latest
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-latest
+          - target: x86_64-unknown-linux-musl
+            os: ubuntu-latest
           - target: x86_64-apple-darwin
+            os: macos-latest
+          - target: universal-apple-darwin
             os: macos-latest
           - target: x86_64-pc-windows-msvc
             os: windows-latest
-    
+
     runs-on: ${{ matrix.os }}
     steps:
       - name: Set Perl environment variables
@@ -31,26 +39,14 @@ jobs:
         run: |
           echo "PERL=$((where.exe perl)[0])" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
           echo "OPENSSL_SRC_PERL=$((where.exe perl)[0])" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
-      
       - uses: actions/checkout@v4
-      
-      - name: Install dependencies (macOS)
-        if: matrix.os == 'macos-latest'
-        run: brew install cmake portaudio pkg-config
-      
-      - name: Install dependencies (Windows)
-        if: matrix.os == 'windows-latest'
-        run: |
-          choco install vcpkg -y
-          vcpkg install portaudio:x64-windows
-      
       - name: Install cross-compilation tools
         uses: taiki-e/setup-cross-toolchain-action@v1
         with:
           target: ${{ matrix.target }}
-      
+        if: startsWith(matrix.os, 'ubuntu')
       - uses: taiki-e/upload-rust-binary-action@v1
         with:
-          bin: chordflow
+          bin: fakehub
           target: ${{ matrix.target }}
           token: ${{ secrets.GITHUB_TOKEN }}
